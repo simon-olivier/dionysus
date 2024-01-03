@@ -1,0 +1,222 @@
+version: "3.8"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - ./appdata/gluetun:/gluetun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 8080:8080 # qbittorrent web interface
+      - 6881:6881 # qbittorrent
+      - 6881:6881/udp # qbittorrent
+    restart: unless-stopped
+    
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    environment:
+      - WEBUI_PORT=8080
+    volumes:
+      - ./appdata/qbittorrents/config:/config
+      - ./data/torrents:/data/torrents
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/prowlarr/config:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+  
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/sonarr/config:/config
+      - ./data:/data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/radarr/config:/config
+      - ./data:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/bazarr/config:/config
+      - ./data:/data
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/lidarr/config:/config
+      - ./data:/data
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:nightly
+    container_name: readarr
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/readarr/config:/config
+      - ./data:/data
+    ports:
+      - 8787:8787
+    restart: unless-stopped
+
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/heimdall/config:/config
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+
+  ombi:
+    image: lscr.io/linuxserver/ombi:latest
+    container_name: ombi
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/ombi/config:/config
+    ports:
+      - 3579:3579
+    restart: unless-stopped
+
+  emby:
+    image: lscr.io/linuxserver/emby:latest
+    container_name: emby
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/emby/config:/config
+      - ./data/media/movies:/data/media/movies
+      - ./data/media/tv:/data/media/tv
+      - ./data/media/music:/data/media/music
+      - ./data/media/books:/data/media/books
+      #- /opt/vc/lib:/opt/vc/lib #optional Path for Raspberry Pi OpenMAX libs
+    ports:
+      - 8096:8096
+      - 8920:8920 #optional
+    devices:
+      - /dev/dri:/dev/dri #optional Only needed if you want to use your Intel or AMD GPU for hardware accelerated video encoding (vaapi).
+      #- /dev/vchiq:/dev/vchiq #optional Only needed if you want to use your Raspberry Pi OpenMax video encoding (Bellagio).
+      #- /dev/video10:/dev/video10 #optional Only needed if you want to use your Raspberry Pi V4L2 video encoding.
+      #- /dev/video11:/dev/video11 #optional Only needed if you want to use your Raspberry Pi V4L2 video encoding.
+      #- /dev/video12:/dev/video12 #optional Only needed if you want to use your Raspberry Pi V4L2 video encoding.
+    restart: unless-stopped
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
+    container_name: elasticsearch
+    env_file: .env
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms750m -Xmx750m
+      - xpack.security.enabled=false # This is bad! Need to automate connection with security
+    ports:
+      - 9200:9200
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+    restart: unless-stopped
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.3
+    container_name: kibana
+    env_file: .env
+    ports:
+      - 5601:5601
+    restart: unless-stopped
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.3
+    container_name: filebeat
+    user: root
+    env_file: .env
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./appdata/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./appdata/filebeat/registry:/usr/share/filebeat/data:rw
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: filebeat -e --strict.perms=false
+    restart: unless-stopped
+
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:8.11.3
+    container_name: metricbeat
+    user: root
+    env_file: .env
+    environment:
+      -  DBUS_SYSTEM_BUS_ADDRESS='unix:path=/hostfs/var/run/dbus/system_bus_socket'
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./appdata/metricbeat/config/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+      - ./appdata/metricbeat/registry:/usr/share/metricbeat/data:rw
+      - /proc:/hostfs/proc:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro\
+      - /:/hostfs:ro
+      - /var/run/dbus/system_bus_socket:/hostfs/var/run/dbus/system_bus_socket:ro
+    command: metricbeat -e --strict.perms=false
+    restart: unless-stopped
