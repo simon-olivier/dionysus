@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  emby:
+    image: lscr.io/linuxserver/emby:latest
+    container_name: emby
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/emby/config:/config
+      - ./data/media/movies:/data/media/movies
+      - ./data/media/tv:/data/media/tv
+      - ./data/media/music:/data/media/music
+      - ./data/media/books:/data/media/books
+      #- /opt/vc/lib:/opt/vc/lib #optional Path for Raspberry Pi OpenMAX libs
+    ports:
+      - 8096:8096
+      - 8920:8920 #optional
+    devices:
+      - /dev/dri:/dev/dri #optional Only needed if you want to use your Intel or AMD GPU for hardware accelerated video encoding (vaapi).
+      #- /dev/vchiq:/dev/vchiq #optional Only needed if you want to use your Raspberry Pi OpenMax video encoding (Bellagio).
+      #- /dev/video10:/dev/video10 #optional Only needed if you want to use your Raspberry Pi V4L2 video encoding.
+      #- /dev/video11:/dev/video11 #optional Only needed if you want to use your Raspberry Pi V4L2 video encoding.
+      #- /dev/video12:/dev/video12 #optional Only needed if you want to use your Raspberry Pi V4L2 video encoding.
+    restart: unless-stopped

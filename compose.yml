@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/heimdall/config:/config
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped  

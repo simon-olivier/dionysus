@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - ./appdata/gluetun/data:/gluetun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 8080:8080 # qbittorrent web interface
+      - 6881:6881 # qbittorrent
+      - 6881:6881/udp # qbittorrent
+    restart: unless-stopped

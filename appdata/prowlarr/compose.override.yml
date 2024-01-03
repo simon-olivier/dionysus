@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    labels:
+      - "co.elastic.logs/enabled=true"
+    env_file: .env
+    volumes:
+      - ./appdata/prowlarr/config:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+  
