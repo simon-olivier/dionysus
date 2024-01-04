@@ -2,14 +2,17 @@ version: "3.8"
 
 services:
   lidarr:
-    image: lscr.io/linuxserver/lidarr:latest
+    image: lscr.io/linuxserver/lidarr:${LIDARR_VERSION}
     container_name: lidarr
     labels:
       - "co.elastic.logs/enabled=true"
-    env_file: .env
     volumes:
       - ./appdata/lidarr/config:/config
       - ./data:/data
     ports:
-      - 8686:8686
+      - ${LIDARR_PORT}:8686
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     restart: unless-stopped

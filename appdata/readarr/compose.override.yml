@@ -2,15 +2,18 @@ version: "3.8"
 
 services:
   readarr:
-    image: lscr.io/linuxserver/readarr:nightly
+    image: lscr.io/linuxserver/readarr:${READARR_VERSION}
     container_name: readarr
     labels:
       - "co.elastic.logs/enabled=true"
-    env_file: .env
     volumes:
       - ./appdata/readarr/config:/config
       - ./data:/data
     ports:
-      - 8787:8787
+      - ${READARR_PORT}:8787
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     restart: unless-stopped
 

@@ -15,6 +15,16 @@ filebeat.autodiscover:
       hints.default_config.enabled: false
 
 output.elasticsearch:
-  hosts: '${ELASTICSEARCH_HOSTS:elasticsearch:9200}'
-  username: '${ELASTICSEARCH_USERNAME:}'
-  password: '${ELASTICSEARCH_PASSWORD:}'
+  hosts: ["https://elasticsearch:9200"]
+  ssl.certificate_authorities: ["config/certs/ca/ca.crt"]
+  username: 'elastic'
+  password: '${ELASTIC_PASSWORD}'
+
+setup:
+  # TODO Fix enable dashboard: With this option enabled, container is exited due to the following error "Exiting: error connecting to Kibana: fail to get the Kibana version: fail to parse kibana version (): passed version is not semver:" (Kibana is reachable though)
+  dashboards.enabled: false
+  ilm.check_exists: false
+  kibana:
+    host: "http://kibana:5601"
+    username: 'kibana_system'
+    password: ${KIBANA_PASSWORD}'

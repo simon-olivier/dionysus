@@ -2,14 +2,17 @@ version: "3.8"
 
 services:
   sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
+    image: lscr.io/linuxserver/sonarr:${SONARR_VERSION}
     container_name: sonarr
     labels:
       - "co.elastic.logs/enabled=true"
-    env_file: .env
     volumes:
       - ./appdata/sonarr/config:/config
       - ./data:/data
     ports:
-      - 8989:8989
+      - ${SONARR_PORT}:8989
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     restart: unless-stopped

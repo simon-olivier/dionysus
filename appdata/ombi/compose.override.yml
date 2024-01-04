@@ -2,13 +2,16 @@ version: "3.8"
 
 services:
   ombi:
-    image: lscr.io/linuxserver/ombi:latest
+    image: lscr.io/linuxserver/ombi:${OMBI_VERSION}
     container_name: ombi
     labels:
       - "co.elastic.logs/enabled=true"
-    env_file: .env
     volumes:
       - ./appdata/ombi/config:/config
     ports:
-      - 3579:3579
+      - ${OMBI_PORT}:3579
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     restart: unless-stopped

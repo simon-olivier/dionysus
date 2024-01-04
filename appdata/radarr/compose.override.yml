@@ -2,14 +2,17 @@ version: "3.8"
 
 services:
   radarr:
-    image: lscr.io/linuxserver/radarr:latest
+    image: lscr.io/linuxserver/radarr:${RADARR_VERSION}
     container_name: radarr
     labels:
       - "co.elastic.logs/enabled=true"
-    env_file: .env
     volumes:
       - ./appdata/radarr/config:/config
       - ./data:/data
     ports:
-      - 7878:7878
+      - ${RADARR_PORT}:7878
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     restart: unless-stopped

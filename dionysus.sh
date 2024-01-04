@@ -5,6 +5,7 @@ set -o pipefail
 
 CONFIG_FILE="dionysus-config.ini"
 COMPOSE_FILE="compose.yml"
+ENV_FILE="${DIONYSUS_ENV_FILE:-.env}"
 
 function log_error() {
   echo "Error: $1" >&2
@@ -34,8 +35,8 @@ function up_command() {
   # Add override files for services
   options+=($(read_services_from_config))
 
-  # Specify the Docker Compose command with options
-  docker compose ${options[@]} up
+  # Specify the Docker Compose command with options and --env-file
+  docker compose --env-file $ENV_FILE ${options[@]} up
 }
 
 function down_command() {
@@ -47,8 +48,8 @@ function down_command() {
   # Add override files for services
   options+=($(read_services_from_config))
 
-  # Specify the Docker Compose down command with options
-  docker compose ${options[@]} down
+  # Specify the Docker Compose down command with options and --env-file
+  docker compose --env-file $ENV_FILE ${options[@]} down
 }
 
 function help_command() {

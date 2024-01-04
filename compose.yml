@@ -2,14 +2,17 @@ version: "3.8"
 
 services:
   heimdall:
-    image: lscr.io/linuxserver/heimdall:latest
+    image: lscr.io/linuxserver/heimdall:${HEIMDALL_VERSION}
     container_name: heimdall
     labels:
       - "co.elastic.logs/enabled=true"
-    env_file: .env
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     volumes:
       - ./appdata/heimdall/config:/config
     ports:
-      - 80:80
-      - 443:443
-    restart: unless-stopped  
+      - ${HEIMDALL_PORT_HTTP}:80
+      - ${HEIMDALL_PORT_HTTPS}:443
+    restart: unless-stopped
