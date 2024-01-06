@@ -4,6 +4,9 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:${QBITTORRENT_VERSION}
     container_name: qbittorrent
+    depends_on:
+      gluetun:
+        condition: service_healthy
     labels:
       - "co.elastic.logs/enabled=true"
     volumes:
