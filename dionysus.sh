@@ -35,8 +35,15 @@ function up_command() {
   # Add override files for services
   options+=($(read_services_from_config))
 
-  # Specify the Docker Compose command with options and --env-file
-  docker compose --env-file $ENV_FILE ${options[@]} up
+  # Specify the Docker Compose command with options, --env-file, and additional options
+  echo "Usage: $0 up [options]"
+  echo "Options:"
+  echo "  Additional options for the underlying docker compose up command"
+  echo ""
+  echo "Example:"
+  echo "  $0 up --build"
+  echo "  $0 up -d"
+  docker compose --env-file $ENV_FILE ${options[@]} up "$@"
 }
 
 function down_command() {
@@ -48,26 +55,40 @@ function down_command() {
   # Add override files for services
   options+=($(read_services_from_config))
 
-  # Specify the Docker Compose down command with options and --env-file
-  docker compose --env-file $ENV_FILE ${options[@]} down
+  # Specify the Docker Compose down command with options, --env-file, and additional options
+  echo "Usage: $0 down [options]"
+  echo "Options:"
+  echo "  Additional options for the underlying docker compose down command"
+  echo ""
+  echo "Example:"
+  echo "  $0 down -v"
+  docker compose --env-file $ENV_FILE ${options[@]} down "$@"
 }
 
 function help_command() {
-  echo "Usage: $0 <subcommand>"
+  echo "Usage: $0 <subcommand> [options]"
   echo "Subcommands:"
   echo "  up   - Start Dionysus services"
   echo "  down - Teardown Dionysus services"
   echo "  help - Show this help message"
+  echo "Options:"
+  echo "  Additional options for the underlying docker compose commands"
+  echo ""
+  echo "Examples:"
+  echo "  $0 up --build"
+  echo "  $0 down -v"
 }
 
 trap cleanup EXIT
 
 case "$1" in
   up)
-    up_command
+    shift # remove the subcommand
+    up_command "$@"
     ;;
   down)
-    down_command
+    shift # remove the subcommand
+    down_command "$@"
     ;;
   help)
     help_command
