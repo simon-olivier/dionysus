@@ -36,13 +36,6 @@ function up_command() {
   options+=($(read_services_from_config))
 
   # Specify the Docker Compose command with options, --env-file, and additional options
-  echo "Usage: $0 up [options]"
-  echo "Options:"
-  echo "  Additional options for the underlying docker compose up command"
-  echo ""
-  echo "Example:"
-  echo "  $0 up --build"
-  echo "  $0 up -d"
   docker compose --env-file $ENV_FILE ${options[@]} up "$@"
 }
 
@@ -56,12 +49,6 @@ function down_command() {
   options+=($(read_services_from_config))
 
   # Specify the Docker Compose down command with options, --env-file, and additional options
-  echo "Usage: $0 down [options]"
-  echo "Options:"
-  echo "  Additional options for the underlying docker compose down command"
-  echo ""
-  echo "Example:"
-  echo "  $0 down -v"
   docker compose --env-file $ENV_FILE ${options[@]} down "$@"
 }
 
