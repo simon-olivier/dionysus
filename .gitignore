@@ -1,1 +1,5 @@
 .env.dev
+**/config
+appdata/elk/filebeat/registry
+appdata/elk/metricbeat/registry
+appdata/gluetun/data
