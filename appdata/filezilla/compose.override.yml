@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  filezilla:
+    image: lscr.io/linuxserver/filezilla:${FILEZILLA_VERSION}
+    container_name: filezilla
+    labels:
+      - "co.elastic.logs/enabled=true"
+    #security_opt:
+    #  - seccomp:unconfined #optional
+    volumes:
+      - ./appdata/filezilla/config:/config
+      - ./data/media:/data
+    ports:
+      - ${FILEZILLA_HTTP_PORT}:3000
+      - ${FILEZILLA_HTTPS_PORT}:3001
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - CUSTOM_USER=${FILEZILLA_USER}
+      - PASSWORD=${FILEZILLA_PASSWORD}
+      - TITLE=${FILEZILLA_TITLE}
+      - FM_HOME=/data
+    restart: unless-stopped
+  
