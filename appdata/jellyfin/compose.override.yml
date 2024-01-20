@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:${JELLYFIN_VERSION}
+    container_name: jellyfin
+    labels:
+      - "co.elastic.logs/enabled=true"
+    volumes:
+      - ./appdata/jellyfin/config:/config
+      - ./data/media/movies:/data/media/movies
+      - ./data/media/tv:/data/media/tv
+      - ./data/media/music:/data/media/music
+      - ./data/media/books:/data/media/books
+      #- /opt/vc/lib:/opt/vc/lib #optional Path for Raspberry Pi OpenMAX libs
+    ports:
+      - ${JELLYFIN_HTTP_PORT}:8096
+      - ${JELLYFIN_HTTPS_PORT}:8920 #optional
+      - ${JELLYFIN_SERVICE_DISCOVERY_PORT}:7359/udp #optional
+      - ${JELLYFIN_CLIENT_ODISCOVERY_PORT}:1900/udp #optional
+    devices:
+      - /dev/dri:/dev/dri #optional Only needed if you want to use your Intel or AMD GPU for hardware accelerated video encoding (vaapi).
+      #- /dev/vcsm:/dev/vcsm #optional Only needed if you want to use your Raspberry Pi OpenMax video encoding (Bellagio).
+      #- /dev/vchiq:/dev/vchiq #optional Only needed if you want to use your Raspberry Pi OpenMax video encoding (Bellagio).
+      #- /dev/video10:/dev/video10 #optional Only needed if you want to use your Raspberry Pi V4L2 video encoding.
+      #- /dev/video11:/dev/video11 #optional Only needed if you want to use your Raspberry Pi V4L2 video encoding.
+      #- /dev/video12:/dev/video12 #optional Only needed if you want to use your Raspberry Pi V4L2 video encoding.
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_PUBLISHEDSERVERURL} #optional
+    restart: unless-stopped
