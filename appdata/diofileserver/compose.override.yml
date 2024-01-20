@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  diofileserver:
+    image: dionysus/diofileserver
+    build: ./app/diofileserver
+    container_name: diofileserver
+    labels:
+      - "co.elastic.logs/enabled=true"
+    volumes:
+      - ./data/media:/data
+    ports:
+      - ${DIOFILESERVER_PORT}:6776
+    environment:
+      - DIR=/data
+    restart: unless-stopped
