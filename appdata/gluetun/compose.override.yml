@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   gluetun:
-    image: qmcgaw/gluetun:${GLUETUN_VERSION}
+    image: ghcr.io/qdm12/gluetun:${GLUETUN_VERSION}
     container_name: gluetun
     labels:
       - "co.elastic.logs/enabled=true"

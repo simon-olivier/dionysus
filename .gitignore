@@ -1,5 +1,7 @@
 .env.dev
+.env.service_versions*
 **/config
 appdata/elk/filebeat/registry
 appdata/elk/metricbeat/registry
 appdata/gluetun/data
+__pycache__
