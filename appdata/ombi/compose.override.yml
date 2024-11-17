@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   ombi:
     image: lscr.io/linuxserver/ombi:${OMBI_VERSION}
